@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/screens/city_selection_screen.dart';
 import 'package:review_restaurant/screens/home_screen.dart';
 import 'package:review_restaurant/screens/restaurant_list_screen.dart';
 
@@ -12,12 +13,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Food Review App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: CitySelectionScreen(),
     );
   }
 }

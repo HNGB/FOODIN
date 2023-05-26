@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'city_selection_screen.dart';
+import 'restaurant_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final String city;
@@ -97,6 +98,16 @@ class HomeScreen extends StatelessWidget {
                     ),
                     onPressed: () {
                       // TODO: Navigate to show all restaurants in the district
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RestaurantListScreen(
+                            city: city,
+                            district: district,
+                            trendingImages: trendingImages, // Add this line
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ],

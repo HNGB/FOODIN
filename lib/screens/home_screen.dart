@@ -104,7 +104,7 @@ class HomeScreen extends StatelessWidget {
                           builder: (context) => RestaurantListScreen(
                             city: city,
                             district: district,
-                            trendingImages: trendingImages, // Add this line
+                            // Add this line
                           ),
                         ),
                       );

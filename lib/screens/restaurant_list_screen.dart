@@ -3,13 +3,39 @@ import 'package:flutter/material.dart';
 class RestaurantListScreen extends StatelessWidget {
   final String city;
   final String district;
-  final List<String> trendingImages;
 
   RestaurantListScreen({
     required this.city,
     required this.district,
-    required this.trendingImages,
   });
+
+  final List<String> allImages = [
+    'assets/images/bobanbojpg.jpg',
+    'assets/images/comtam.jpg',
+    'assets/images/micaysasin.jpg',
+    'assets/images/piza.jpg',
+    'assets/images/sushimrtom.jpg',
+    // Add 5 more restaurant images here
+    'assets/images/bun-bo-dung.jpg',
+    'assets/images/banh-canh-ghe-ngoc-lam.jpg',
+    'assets/images/lau-bo-nam-canh.jpg',
+    'assets/images/quan-pho-toan.jpg',
+    'assets/images/mr-tofu-bun-dau-mam-tom.jpg',
+  ];
+  // Danh sách các tên restaurant mới
+  final List<String> restaurantNames = [
+    'Bơ Bán Bò',
+    'Cơm Tấm Phúc Lọc Thọ',
+    'Mì Cay Sasin',
+    'Pizza Hut',
+    'Sushi Mr.Tom',
+    // Add 5 more restaurant names here
+    'Bún Bò Dũng',
+    'Bánh Canh Ghẹ Ngọc Lâm',
+    'Lẩu Bò Năm Canh',
+    'Quán Phở Toàn',
+    'Bún đậu MrTofu',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +63,7 @@ class RestaurantListScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 childAspectRatio: 0.8,
               ),
-              itemCount: trendingImages.length,
+              itemCount: allImages.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -57,7 +83,7 @@ class RestaurantListScreen extends StatelessWidget {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(16.0),
                               child: Image.asset(
-                                trendingImages[index],
+                                allImages[index],
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -65,7 +91,7 @@ class RestaurantListScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Restaurant ${index + 1}',
+                              restaurantNames[index], // Thay đổi tên restaurant
                               style: TextStyle(
                                 fontSize: 16.0,
                                 color: Colors.red,

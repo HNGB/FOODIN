@@ -3,18 +3,21 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:review_restaurant/screens/welcome_screen.dart';
 import 'package:review_restaurant/screens/widgets/customized_button.dart';
 import 'package:review_restaurant/screens/widgets/customized_textfield.dart';
-import 'forgot_passwor.dart';
+import 'login_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +25,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: Colors.white, // Màu nền trắng
 
-        body: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: double.infinity,
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -49,57 +52,42 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    "Welcome Back! Glad \nto see you again",
+                    "Hello!  Register to get \nStarted",
                     style: TextStyle(
-                      color: Color.fromARGB(255, 235, 18, 2),
+                      color: Colors.black,
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 CustomizedTextfield(
+                  myController: _usernameController,
+                  hintText: "Username",
+                  isPassword: false,
+                ),
+                CustomizedTextfield(
                   myController: _emailController,
-                  hintText: "Enter your Email",
+                  hintText: "Email",
                   isPassword: false,
                 ),
                 CustomizedTextfield(
                   myController: _passwordController,
-                  hintText: "Enter your Password",
+                  hintText: "Password",
                   isPassword: true,
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ForgotPassword(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                          color: Color(0xff6A707C),
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
+                CustomizedTextfield(
+                  myController: _confirmPasswordController,
+                  hintText: "Confirm Password",
+                  isPassword: true,
                 ),
                 CustomizedButton(
-                  buttonText: "Login",
+                  buttonText: "Register",
                   buttonColor: Colors.red, // Màu nút vàng đỏ
                   textColor: Colors.white,
                   onPressed: () async {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const WelcomeScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
                     );
                   },
                 ),
@@ -112,10 +100,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: MediaQuery.of(context).size.height * 0.15,
                         color: Colors.grey,
                       ),
-                      const Text("Or Login with"),
+                      const Text("Or Register with"),
                       Container(
                         height: 1,
-                        width: MediaQuery.of(context).size.height * 0.18,
+                        width: MediaQuery.of(context).size.height * 0.16,
                         color: Colors.grey,
                       ),
                     ],
@@ -153,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             FontAwesomeIcons.google,
                             // color: Colors.blue,
                           ),
-                          onPressed: () async {},
+                          onPressed: () {},
                         ),
                       ),
                       Container(
@@ -175,25 +163,34 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 140,
+                  height: 40,
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(48, 8, 8, 8.0),
                   child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: const [
-                      Text(
-                        "Don't have an account?",
+                    children: [
+                      const Text(
+                        "Already have an account?",
                         style: TextStyle(
                           color: Color(0xff1E232C),
                           fontSize: 15,
                         ),
                       ),
-                      Text(
-                        "  Register Now",
-                        style: TextStyle(
-                          color: Color(0xff35C2C1),
-                          fontSize: 15,
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "  Login Now",
+                          style: TextStyle(
+                            color: Color(0xff35C2C1),
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ],

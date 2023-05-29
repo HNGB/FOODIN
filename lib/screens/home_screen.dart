@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/screens/restaurant_detail_screen.dart';
 import 'city_selection_screen.dart';
 import 'restaurant_list_screen.dart';
 
@@ -33,7 +34,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             Container(
               height: MediaQuery.of(context).size.height / 3,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/background.jpg'),
                   fit: BoxFit.fill,
@@ -119,36 +120,47 @@ class HomeScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: trendingImages.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    width: 200,
-                    margin: EdgeInsets.all(1.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16.0),
-                            child: Image.asset(
-                              trendingImages[index],
-                              fit: BoxFit.fill,
+                  return GestureDetector(
+                    onTap: () {
+                      // Chuyển đến màn hình khác khi người dùng nhấn vào item
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const RestaurantDetailScreen()),
+                      );
+                    },
+                    child: Container(
+                      width: 200,
+                      margin: EdgeInsets.all(1.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16.0),
+                              child: Image.asset(
+                                trendingImages[index],
+                                fit: BoxFit.fill,
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            trendingLabels[index],
-                            style: TextStyle(fontSize: 16.0),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              trendingLabels[index],
+                              style: TextStyle(fontSize: 16.0),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
-            ),
+            )
           ],
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class RestaurantListScreen extends StatelessWidget {
+class RestaurantListScreen extends StatefulWidget {
   final String city;
   final String district;
 
@@ -9,6 +9,11 @@ class RestaurantListScreen extends StatelessWidget {
     required this.district,
   });
 
+  @override
+  _RestaurantListScreenState createState() => _RestaurantListScreenState();
+}
+
+class _RestaurantListScreenState extends State<RestaurantListScreen> {
   final List<String> allImages = [
     'assets/images/bobanbojpg.jpg',
     'assets/images/comtam.jpg',
@@ -22,7 +27,7 @@ class RestaurantListScreen extends StatelessWidget {
     'assets/images/quan-pho-toan.jpg',
     'assets/images/mr-tofu-bun-dau-mam-tom.jpg',
   ];
-  // Danh sách các tên restaurant mới
+
   final List<String> restaurantNames = [
     'Bơ Bán Bò',
     'Cơm Tấm Phúc Lọc Thọ',
@@ -36,6 +41,9 @@ class RestaurantListScreen extends StatelessWidget {
     'Quán Phở Toàn',
     'Bún đậu MrTofu',
   ];
+
+  List<bool> isFavorite =
+      List.filled(10, false); // Tạo danh sách trạng thái yêu thích ban đầu
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +82,11 @@ class RestaurantListScreen extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16.0),
-                        color: Color.fromARGB(237, 243, 238, 238),
+                        color: Color.fromARGB(255, 231, 231, 231),
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Thay đổi căn chỉnh của cột
                         children: [
                           Expanded(
                             child: ClipRRect(
@@ -85,17 +94,21 @@ class RestaurantListScreen extends StatelessWidget {
                               child: Image.asset(
                                 allImages[index],
                                 fit: BoxFit.cover,
+                                width: double
+                                    .infinity, // Sử dụng chiều rộng tối đa của ô chứa
+                                height: double
+                                    .infinity, // Sử dụng chiều cao tối đa của ô chứa
                               ),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              restaurantNames[index], // Thay đổi tên restaurant
+                              restaurantNames[index],
                               style: TextStyle(
-                                fontSize: 16.0,
-                                color: Colors.red,
-                              ),
+                                  fontSize: 18.0,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700),
                             ),
                           ),
                           Padding(
@@ -106,23 +119,40 @@ class RestaurantListScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.attach_money, color: Colors.red),
+                                    Icon(Icons.attach_money,
+                                        color: const Color.fromARGB(
+                                            221, 124, 122, 122)),
                                     Text(
                                       '9.5',
-                                      style: TextStyle(color: Colors.red),
+                                      style: TextStyle(color: Colors.black87),
                                     ),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Icon(Icons.star, color: Colors.red),
+                                    Icon(Icons.star,
+                                        color:
+                                            Color.fromARGB(255, 238, 238, 14)),
                                     Text(
                                       '5',
-                                      style: TextStyle(color: Colors.red),
+                                      style: TextStyle(color: Colors.black87),
                                     ),
                                   ],
                                 ),
-                                Icon(Icons.favorite, color: Colors.red),
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.favorite,
+                                    color: isFavorite[index]
+                                        ? Colors.red
+                                        : const Color.fromARGB(
+                                            255, 142, 142, 142),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      isFavorite[index] = !isFavorite[index];
+                                    });
+                                  },
+                                ),
                               ],
                             ),
                           ),

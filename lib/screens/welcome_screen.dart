@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/screens/city_selection_screen.dart';
+import 'package:review_restaurant/screens/home_screen.dart';
 import 'package:review_restaurant/screens/login_screen.dart';
 import 'package:review_restaurant/screens/signup_screen.dart';
 import 'package:review_restaurant/screens/widgets/customized_button.dart';
@@ -53,18 +55,27 @@ class WelcomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Continue as a Guest",
-                  style: TextStyle(
-                    fontFamily: "OpenSans", // Thay "YourDesiredFont" bằng font chữ mong muốn
-                    color: Color(0xff35C2C1),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
+                padding: EdgeInsets.all(10.0),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CitySelectionScreen()),
+                    );
+                    print("Continue as a Guest pressed");
+                  },
+                  child: const Text(
+                    "Continue as a Guest",
+                    style: TextStyle(
+                      fontFamily: "OpenSans",
+                      color: Color(0xff35C2C1),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),

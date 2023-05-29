@@ -8,14 +8,18 @@ class RestaurantDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: null,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(
+            color: Colors.red), // Đặt màu sắc đỏ cho biểu tượng quay lại
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Container(
@@ -404,7 +408,8 @@ class RestaurantDetailScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold), // Adjust the font size as needed
+                        fontWeight:
+                            FontWeight.bold), // Adjust the font size as needed
                   ),
                   child: const Text('Write a Review'),
                 ),
@@ -557,4 +562,3 @@ class WriteReviewScreen extends StatelessWidget {
     );
   }
 }
-

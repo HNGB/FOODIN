@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/screens/city_selection_screen.dart';
+import 'package:review_restaurant/screens/home_screen.dart';
 import 'package:review_restaurant/screens/login_screen.dart';
 import 'package:review_restaurant/screens/signup_screen.dart';
-
-import '../widgets/customized_button.dart';
+import 'package:review_restaurant/screens/widgets/customized_button.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -24,10 +25,8 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               const SizedBox(
-                height: 130,
-                width: 180,
                 child: Image(
-                  image: AssetImage("assets/icons/logo.png"),
+                  image: AssetImage("assets/images/logo.png"),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -36,7 +35,6 @@ class WelcomeScreen extends StatelessWidget {
                 buttonText: "Login",
                 buttonColor: const Color.fromARGB(255, 211, 7, 7),
                 textColor: Colors.white,
-                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -44,11 +42,10 @@ class WelcomeScreen extends StatelessWidget {
                   );
                 },
               ),
-              CustomizedButton(
+              CustomizedButton( 
                 buttonText: "Register",
-                buttonColor: Colors.white,
-                textColor: Colors.black,
-                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                buttonColor: Colors.orange,
+                textColor: Colors.white,
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -57,13 +54,28 @@ class WelcomeScreen extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  "Continue as a Guest",
-                  style: TextStyle(color: Color(0xff35C2C1), fontSize: 25),
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.all(10.0),
+              //   child: InkWell(
+              //     onTap: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(builder: (context) => CitySelectionScreen()),
+              //       );
+              //       print("Continue as a Guest pressed");
+              //     },
+              //     child: const Text(
+              //       "Continue as a Guest",
+              //       style: TextStyle(
+              //         fontFamily: "OpenSans",
+              //         color: Color(0xff35C2C1),
+              //         fontSize: 18,
+              //         fontWeight: FontWeight.bold,
+              //         decoration: TextDecoration.underline,
+              //       ),
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ),

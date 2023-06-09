@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:review_restaurant/screens/restaurant_detail_screen.dart';
+import 'package:review_restaurant/screens/widgets/footer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'city_selection_screen.dart';
 import 'restaurant_list_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String city;
   final String district;
 
   HomeScreen({required this.city, required this.district});
 
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final List<String> trendingImages = [
     'assets/images/bobanbojpg.jpg',
     'assets/images/comtam.jpg',
@@ -24,6 +31,18 @@ class HomeScreen extends StatelessWidget {
     'Pizza Hut',
     'Sushi Mr.Tom',
   ];
+  int _currentIndex = 0;
+  Future<void> _saveDataToStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('city', widget.city);
+    await prefs.setString('district', widget.district);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _saveDataToStorage();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +52,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: MediaQuery.of(context).size.height / 3,
+              height: MediaQuery.of(context).size.height / 3.5,
               decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/background.jpg'),
@@ -47,11 +66,11 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    '$district, ',
+                    '${widget.district}, ',
                     style: TextStyle(fontSize: 18.0),
                   ),
                   Text(
-                    '$city City',
+                    '${widget.city} City',
                     style: TextStyle(fontSize: 18.0),
                   ),
                   Spacer(),
@@ -103,8 +122,8 @@ class HomeScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => RestaurantListScreen(
-                            city: city,
-                            district: district,
+                            city: widget.city,
+                            district: widget.district,
                             // Add this line
                           ),
                         ),
@@ -163,6 +182,14 @@ class HomeScreen extends StatelessWidget {
             )
           ],
         ),
+      ),
+      bottomNavigationBar: MyFooter(
+        currentIndex: _currentIndex,
+        onTabChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }

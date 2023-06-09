@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:review_restaurant/screens/home_screen.dart';
+import 'package:review_restaurant/screens/login_screen.dart';
 import 'package:review_restaurant/screens/restaurant_list_screen.dart';
+import 'package:review_restaurant/screens/welcome_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: WelcomeScreen(),
     );
   }
 }

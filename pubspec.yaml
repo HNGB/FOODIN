@@ -37,7 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   cached_network_image: ^3.2.3
   http: ^0.13.6
-  flutter_secure_storage: ^8.0.0
+  font_awesome_flutter: ^10.4.0
+  
 
 dev_dependencies:
   flutter_test:

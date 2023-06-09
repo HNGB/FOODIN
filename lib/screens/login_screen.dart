@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:review_restaurant/screens/city_selection_screen.dart';
 import 'package:review_restaurant/screens/welcome_screen.dart';
 import 'package:review_restaurant/screens/widgets/customized_button.dart';
 import 'package:review_restaurant/screens/widgets/customized_textfield.dart';
@@ -98,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const WelcomeScreen(),
+                        builder: (_) =>  CitySelectionScreen(),
                       ),
                     );
                   },

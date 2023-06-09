@@ -42,10 +42,10 @@ class WelcomeScreen extends StatelessWidget {
                   );
                 },
               ),
-              CustomizedButton(
+              CustomizedButton( 
                 buttonText: "Register",
-                buttonColor: Colors.white,
-                textColor: Colors.black,
+                buttonColor: Colors.orange,
+                textColor: Colors.white,
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -54,28 +54,28 @@ class WelcomeScreen extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 20),
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CitySelectionScreen()),
-                    );
-                    print("Continue as a Guest pressed");
-                  },
-                  child: const Text(
-                    "Continue as a Guest",
-                    style: TextStyle(
-                      fontFamily: "OpenSans",
-                      color: Color(0xff35C2C1),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              )
+              // Padding(
+              //   padding: EdgeInsets.all(10.0),
+              //   child: InkWell(
+              //     onTap: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(builder: (context) => CitySelectionScreen()),
+              //       );
+              //       print("Continue as a Guest pressed");
+              //     },
+              //     child: const Text(
+              //       "Continue as a Guest",
+              //       style: TextStyle(
+              //         fontFamily: "OpenSans",
+              //         color: Color(0xff35C2C1),
+              //         fontSize: 18,
+              //         fontWeight: FontWeight.bold,
+              //         decoration: TextDecoration.underline,
+              //       ),
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ),

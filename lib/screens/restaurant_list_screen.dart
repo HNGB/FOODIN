@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'restaurant_detail_screen.dart';
 
 class RestaurantListScreen extends StatefulWidget {
   final String city;
@@ -20,7 +21,6 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
     'assets/images/micaysasin.jpg',
     'assets/images/piza.jpg',
     'assets/images/sushimrtom.jpg',
-    // Add 5 more restaurant images here
     'assets/images/bun-bo-dung.jpg',
     'assets/images/banh-canh-ghe-ngoc-lam.jpg',
     'assets/images/lau-bo-nam-canh.jpg',
@@ -34,7 +34,6 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
     'Mì Cay Sasin',
     'Pizza Hut',
     'Sushi Mr.Tom',
-    // Add 5 more restaurant names here
     'Bún Bò Dũng',
     'Bánh Canh Ghẹ Ngọc Lâm',
     'Lẩu Bò Năm Canh',
@@ -42,8 +41,33 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
     'Bún đậu MrTofu',
   ];
 
+  final List<double> restaurantPrices = [
+    9.5,
+    8.0,
+    10.5,
+    12.0,
+    15.5,
+    7.5,
+    9.0,
+    11.5,
+    10.0,
+    6.5,
+  ];
+
   List<bool> isFavorite =
       List.filled(10, false); // Tạo danh sách trạng thái yêu thích ban đầu
+
+  void navigateToRestaurantDetail(int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RestaurantDetailScreen(
+
+            // Truyền thêm dữ liệu khác cần thiết
+            ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,88 +99,94 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
+                  child: GestureDetector(
+                    onTap: () => navigateToRestaurantDetail(index),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.0),
-                        color: Color.fromARGB(255, 231, 231, 231),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .center, // Thay đổi căn chỉnh của cột
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.asset(
-                                allImages[index],
-                                fit: BoxFit.cover,
-                                width: double
-                                    .infinity, // Sử dụng chiều rộng tối đa của ô chứa
-                                height: double
-                                    .infinity, // Sử dụng chiều cao tối đa của ô chứa
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          color: Color.fromARGB(255, 231, 231, 231),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.asset(
+                                  allImages[index],
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              restaurantNames[index],
-                              style: TextStyle(
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                restaurantNames[index],
+                                style: TextStyle(
                                   fontSize: 18.0,
                                   color: Colors.black,
-                                  fontWeight: FontWeight.w700),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.attach_money,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.attach_money,
                                         color: const Color.fromARGB(
-                                            221, 124, 122, 122)),
-                                    Text(
-                                      '9.5',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.star,
-                                        color:
-                                            Color.fromARGB(255, 238, 238, 14)),
-                                    Text(
-                                      '5',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ],
-                                ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.favorite,
-                                    color: isFavorite[index]
-                                        ? Colors.red
-                                        : const Color.fromARGB(
-                                            255, 142, 142, 142),
+                                            221, 124, 122, 122),
+                                      ),
+                                      Text(
+                                        restaurantPrices[index].toString(),
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                    ],
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      isFavorite[index] = !isFavorite[index];
-                                    });
-                                  },
-                                ),
-                              ],
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        color:
+                                            Color.fromARGB(255, 238, 238, 14),
+                                      ),
+                                      Text(
+                                        '5',
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                    ],
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.favorite,
+                                      color: isFavorite[index]
+                                          ? Colors.red
+                                          : const Color.fromARGB(
+                                              255, 142, 142, 142),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        isFavorite[index] = !isFavorite[index];
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

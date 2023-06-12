@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../model/City.dart';
+import '../service/city_service.dart';
 import 'district_selection_screen.dart';
 
 class CitySelectionScreen extends StatefulWidget {
@@ -8,20 +10,26 @@ class CitySelectionScreen extends StatefulWidget {
 }
 
 class _CitySelectionScreenState extends State<CitySelectionScreen> {
-  String? selectedCity;
+  City? selectedCity;
+  List<City> cities = [];
+  CityService cityService = CityService();
 
   @override
   void initState() {
     super.initState();
-    setStatusBarColor(
-        Colors.white); // Đặt màu của thanh trạng thái thành màu trắng
+    setStatusBarColor(Colors.white);
+    loadCities();
   }
 
-  @override
-  void dispose() {
-    setStatusBarColor(Colors
-        .transparent); // Đặt màu của thanh trạng thái thành màu trong suốt khi thoát khỏi màn hình này
-    super.dispose();
+  void loadCities() async {
+    try {
+      List<City> fetchedCities = await cityService.getCities();
+      setState(() {
+        cities = fetchedCities;
+      });
+    } catch (e) {
+      print('Error loading cities: $e');
+    }
   }
 
   void setStatusBarColor(Color color) {
@@ -36,7 +44,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double dropdownWidth = screenWidth * 0.5; // 50% chiều rộng màn hình
+    double dropdownWidth = screenWidth * 0.5;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -47,7 +55,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
             margin: EdgeInsets.all(32.0),
             padding: EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.orange[300],
               borderRadius: BorderRadius.circular(16.0),
               boxShadow: [
                 BoxShadow(
@@ -72,9 +80,9 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                 SizedBox(height: 8.0),
                 Container(
                   width: dropdownWidth,
-                  child: DropdownButton<String>(
+                  child: DropdownButton<City>(
                     value: selectedCity,
-                    hint: Text('Select City'), // Hint text
+                    hint: Text('Select City'),
                     icon: Icon(
                       Icons.arrow_drop_down,
                       color: Colors.black,
@@ -83,7 +91,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                     elevation: 16,
                     underline: Container(),
                     isExpanded: true,
-                    onChanged: (String? value) {
+                    onChanged: (City? value) {
                       setState(() {
                         selectedCity = value;
                       });
@@ -91,17 +99,17 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                DistrictSelectionScreen(city: selectedCity!),
+                            builder: (context) => DistrictSelectionScreen(
+                              city: selectedCity!,
+                            ),
                           ),
                         );
                       }
                     },
-                    items:
-                        ['Ha Noi', 'Ho Chi Minh', 'Da Nang'].map((String city) {
-                      return DropdownMenuItem<String>(
+                    items: cities.map((City city) {
+                      return DropdownMenuItem<City>(
                         value: city,
-                        child: Text(city),
+                        child: Text(city.cityName),
                       );
                     }).toList(),
                   ),

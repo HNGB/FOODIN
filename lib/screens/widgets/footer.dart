@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:review_restaurant/screens/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../model/City.dart';
+import '../../model/district.dart';
 import '../home_screen.dart';
 
 class MyFooter extends StatelessWidget {
@@ -18,13 +22,22 @@ class MyFooter extends StatelessWidget {
       );
     } else if (index == 0) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String city = prefs.getString('city') ?? '';
-      String district = prefs.getString('district') ?? '';
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => HomeScreen(city: city, district: district)),
-      );
+      String? cityJson = prefs.getString('city');
+      String? districtJson = prefs.getString('district');
+
+      if (cityJson != null && districtJson != null) {
+        City? city = City.fromJson(json.decode(cityJson));
+        District? district = District.fromJson(json.decode(districtJson));
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(city: city, district: district),
+          ),
+        );
+      } else {
+        // Handle case when city or district is not available
+      }
     } else {
       onTabChanged(index);
     }

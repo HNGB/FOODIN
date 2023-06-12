@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/model/district.dart';
 import 'package:review_restaurant/screens/restaurant_detail_screen.dart';
 import 'package:review_restaurant/screens/widgets/footer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../model/City.dart';
 import 'city_selection_screen.dart';
 import 'restaurant_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String city;
-  final String district;
+  final City city;
+  final District district;
 
   HomeScreen({required this.city, required this.district});
 
@@ -34,8 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   Future<void> _saveDataToStorage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('city', widget.city);
-    await prefs.setString('district', widget.district);
+    await prefs.setString('city', json.encode(widget.city.toJson()));
+    await prefs.setString('district', json.encode(widget.district.toJson()));
   }
 
   @override
@@ -66,11 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    '${widget.district}, ',
+                    '${widget.district.districtName}, ',
                     style: TextStyle(fontSize: 18.0),
                   ),
                   Text(
-                    '${widget.city} City',
+                    '${widget.city.cityName} City',
                     style: TextStyle(fontSize: 18.0),
                   ),
                   Spacer(),
@@ -122,8 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => RestaurantListScreen(
-                            city: widget.city,
-                            district: widget.district,
+                            city: widget.city.cityName,
+                            district: widget.district.districtName,
                             // Add this line
                           ),
                         ),

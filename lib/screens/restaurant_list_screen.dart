@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/model/district.dart';
+import '../model/City.dart';
+import '../model/restaurant.dart';
 import 'restaurant_detail_screen.dart';
+import 'package:review_restaurant/service/restaurant_service.dart';
 
 class RestaurantListScreen extends StatefulWidget {
-  final String city;
-  final String district;
-
+  final City city;
+  final District district;
+  final TextEditingController searchController;
   RestaurantListScreen({
     required this.city,
     required this.district,
+    required this.searchController,
   });
 
   @override
@@ -15,73 +20,99 @@ class RestaurantListScreen extends StatefulWidget {
 }
 
 class _RestaurantListScreenState extends State<RestaurantListScreen> {
-  final List<String> allImages = [
-    'assets/images/bobanbojpg.jpg',
-    'assets/images/comtam.jpg',
-    'assets/images/micaysasin.jpg',
-    'assets/images/piza.jpg',
-    'assets/images/sushimrtom.jpg',
-    'assets/images/bun-bo-dung.jpg',
-    'assets/images/banh-canh-ghe-ngoc-lam.jpg',
-    'assets/images/lau-bo-nam-canh.jpg',
-    'assets/images/quan-pho-toan.jpg',
-    'assets/images/mr-tofu-bun-dau-mam-tom.jpg',
-  ];
-
-  final List<String> restaurantNames = [
-    'Bơ Bán Bò',
-    'Cơm Tấm Phúc Lọc Thọ',
-    'Mì Cay Sasin',
-    'Pizza Hut',
-    'Sushi Mr.Tom',
-    'Bún Bò Dũng',
-    'Bánh Canh Ghẹ Ngọc Lâm',
-    'Lẩu Bò Năm Canh',
-    'Quán Phở Toàn',
-    'Bún đậu MrTofu',
-  ];
-
-  final List<double> restaurantPrices = [
-    9.5,
-    8.0,
-    10.5,
-    12.0,
-    15.5,
-    7.5,
-    9.0,
-    11.5,
-    10.0,
-    6.5,
-  ];
-
-  List<bool> isFavorite =
-      List.filled(10, false); // Tạo danh sách trạng thái yêu thích ban đầu
+  RestaurantService restaurantService = RestaurantService();
+  List<Restaurant> restaurants = [];
+  List<Restaurant> filteredRestaurants = [];
+  List<bool> isFavorite = [];
+  String searchKeyword = '';
 
   void navigateToRestaurantDetail(int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RestaurantDetailScreen(
-
-            // Truyền thêm dữ liệu khác cần thiết
-            ),
+        builder: (context) => RestaurantDetailScreen(),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadRestaurants();
+  }
+
+  void loadRestaurants() async {
+    try {
+      List<Restaurant> fetchedRestaurants = await restaurantService
+          .getRestaurantsByDistrictId(widget.district.districtId);
+      setState(() {
+        restaurants = fetchedRestaurants;
+        isFavorite = List.generate(fetchedRestaurants.length, (index) => false);
+        filterRestaurants();
+      });
+    } catch (e) {
+      print('Error loading restaurants: $e');
+    }
+  }
+
+  void filterRestaurants() {
+    if (widget.searchController.text.isEmpty) {
+      setState(() {
+        filteredRestaurants = restaurants
+            .where((restaurant) => restaurant.resName
+                .toLowerCase()
+                .contains(searchKeyword.toLowerCase()))
+            .toList();
+      });
+    } else {
+      setState(() {
+        filteredRestaurants = restaurants
+            .where((restaurant) => restaurant.resName
+                .toLowerCase()
+                .contains(widget.searchController.text.toLowerCase()))
+            .toList();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.red),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              '${widget.district.districtName}, ',
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.orange[400],
+              ),
+            ),
+            Text(
+              '${widget.city.cityName} City',
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.orange[400],
+              ),
+            ),
+            Spacer(),
+          ],
+        ),
       ),
       body: Column(
         children: [
           Container(
             padding: EdgeInsets.all(16.0),
             child: TextField(
+              controller: widget.searchController,
+              onChanged: (value) {
+                searchKeyword = value;
+                filterRestaurants();
+              },
               decoration: InputDecoration(
                 hintText: 'Search for restaurants',
                 border: OutlineInputBorder(),
@@ -95,8 +126,9 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                 crossAxisCount: 2,
                 childAspectRatio: 0.8,
               ),
-              itemCount: allImages.length,
+              itemCount: filteredRestaurants.length,
               itemBuilder: (context, index) {
+                final restaurant = filteredRestaurants[index];
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
@@ -116,8 +148,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                             Expanded(
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(16.0),
-                                child: Image.asset(
-                                  allImages[index],
+                                child: Image.network(
+                                  restaurant.avatar,
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: double.infinity,
@@ -127,7 +159,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                restaurantNames[index],
+                                restaurant.resName,
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   color: Colors.black,
@@ -145,25 +177,11 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                                   Row(
                                     children: [
                                       Icon(
-                                        Icons.attach_money,
-                                        color: const Color.fromARGB(
-                                            221, 124, 122, 122),
-                                      ),
-                                      Text(
-                                        restaurantPrices[index].toString(),
-                                        style: TextStyle(color: Colors.black87),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
                                         Icons.star,
-                                        color:
-                                            Color.fromARGB(255, 238, 238, 14),
+                                        color: Colors.yellow[800],
                                       ),
                                       Text(
-                                        '5',
+                                        restaurant.calculatedRating.toString(),
                                         style: TextStyle(color: Colors.black87),
                                       ),
                                     ],

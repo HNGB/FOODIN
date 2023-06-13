@@ -46,8 +46,8 @@ class MyFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey[200],
-      padding: EdgeInsets.all(16.0),
+      color: Colors.orange[300],
+      padding: EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -58,6 +58,14 @@ class MyFooter extends StatelessWidget {
               color: _getCurrentTabColor(0),
             ),
             onPressed: () => _onTabChanged(0, context),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.wysiwyg_sharp,
+              size: _getCurrentTabSize(3),
+              color: _getCurrentTabColor(3),
+            ),
+            onPressed: () => _onTabChanged(3, context),
           ),
           IconButton(
             icon: Icon(

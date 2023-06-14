@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:review_restaurant/screens/signup_screen.dart';
-
+import 'package:http/http.dart' as http;
 import '../component/my_button.dart';
 import '../component/my_textfield.dart';
 import '../component/square_tile.dart';
@@ -14,14 +17,43 @@ class LoginPage extends StatelessWidget {
   final passwordController = TextEditingController();
 
   // sign user in method
-  void signUserIn(BuildContext context) {
+  void signUserIn(String email, password, BuildContext context) async {
     // Perform sign-in operations
+    try {
+      Map<String, dynamic> body = {
+        'userName': email,
+        'password': password,
+      };
 
-    // Navigate to CitySelectionScreen
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CitySelectionScreen()),
-    );
+      http.Response response = await http.post(
+        Uri.parse('https://foodiapi.azurewebsites.net/api/User/Login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the response JSON
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        // Save the user object to local storage
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user', jsonEncode(responseData));
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CitySelectionScreen()),
+        );
+      } else {
+        // Handle other status codes if needed
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login failed. Please check and re-enter.'),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   void navigateToSignUpScreen(BuildContext context) {
@@ -111,8 +143,9 @@ class LoginPage extends StatelessWidget {
 
                   // sign in button
                   MyButton(
-                    onTap: () =>
-                        signUserIn(context), // Pass the context to signUserIn
+                    onTap: () => signUserIn(usernameController.text.toString(),
+                        passwordController.text.toString(), context),
+                    // Pass the context to signUserIn
                   ),
 
                   const SizedBox(height: 50),

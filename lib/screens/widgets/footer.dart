@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/screens/newsfeed.dart';
 import 'package:review_restaurant/screens/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,6 +39,11 @@ class MyFooter extends StatelessWidget {
       } else {
         // Handle case when city or district is not available
       }
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => NewsfeedScreen()),
+      );
     } else {
       onTabChanged(index);
     }
@@ -47,7 +53,7 @@ class MyFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.orange[300],
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(1.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [

@@ -1,14 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:review_restaurant/screens/welcome_screen.dart';
 import 'package:review_restaurant/screens/widgets/customized_button.dart';
 import 'package:review_restaurant/screens/widgets/customized_textfield.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../component/my_button.dart';
 import '../component/my_textfield.dart';
 import '../component/signinButton.dart';
 import '../component/square_tile.dart';
+import 'city_selection_screen.dart';
 import 'login_screen.dart';
 import 'newlogin_screen.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -22,16 +27,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final passwordController = TextEditingController();
   final confirmpasswordController = TextEditingController();
   final emailController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-  void signUserIn(BuildContext context) {
+  final phoneNumberController = TextEditingController();
+  final fullNameController = TextEditingController();
+  void signUserIn(BuildContext context, String username, password, gmail,
+      fullName, phoneNumber) async {
     // Perform sign-in operations
+    try {
+      Map<String, dynamic> body = {
+        'userName': username,
+        'fullName': fullName,
+        'email': gmail,
+        'phoneNumber': phoneNumber,
+        'password': password
+      };
 
+      http.Response response = await http.post(
+        Uri.parse('https://foodiapi.azurewebsites.net/api/User/Register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the response JSON
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Register success!, Login now'),
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } else {
+        // Handle other status codes if needed
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration failed. Please check and re-enter.'),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e.toString());
+    }
     // Navigate to CitySelectionScreen
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
   }
 
   @override
@@ -85,32 +123,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
 
                 const SizedBox(height: 10),
-
+                MyTextField(
+                  controller: passwordController,
+                  hintText: 'Password',
+                  obscureText: true,
+                ),
+                const SizedBox(height: 10),
                 // password textfield
                 MyTextField(
                   controller: emailController,
                   hintText: 'Gmail',
-                  obscureText: true,
+                  obscureText: false,
                 ),
                 const SizedBox(height: 10),
                 MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
+                  controller: fullNameController,
+                  hintText: 'Full name',
                   obscureText: false,
                 ),
-
                 const SizedBox(height: 10),
 
                 // password textfield
                 MyTextField(
-                  controller: confirmpasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
+                  controller: phoneNumberController,
+                  hintText: 'Phone number',
+                  obscureText: false,
                 ),
                 const SizedBox(height: 10),
+
                 SigninButton(
-                  onTap: () =>
-                      signUserIn(context), // Pass the context to signUserIn
+                  onTap: () => signUserIn(
+                      context,
+                      usernameController.text.toString(),
+                      passwordController.text.toString(),
+                      emailController.text.toString(),
+                      fullNameController.text.toString(),
+                      phoneNumberController.text
+                          .toString()), // Pass the context to signUserIn
                 ),
 
                 Padding(
@@ -131,14 +180,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     // google button
                     SquareTile(imagePath: 'assets/images/google.png'),
 
-                    SizedBox(width: 25),
+                    SizedBox(width: 10),
 
                     // apple button
                     SquareTile(
@@ -146,10 +195,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ],
                 ),
                 const SizedBox(
-                  height: 40,
+                  height: 10,
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(48, 8, 8, 8.0),
+                  padding: const EdgeInsets.fromLTRB(55, 8, 8, 8.0),
                   child: Row(
                     children: [
                       const Text(

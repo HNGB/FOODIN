@@ -81,6 +81,13 @@ class SettingsScreen extends StatelessWidget {
                     // TODO: Implement language settings
                   },
                 ),
+                ListTile(
+                  leading: Icon(Icons.output_outlined),
+                  title: Text('Log out'),
+                  onTap: () {
+                    // TODO: Implement privacy settings
+                  },
+                ),
               ],
             ),
           ),

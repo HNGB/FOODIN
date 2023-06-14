@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/model/district.dart';
+import '../model/City.dart';
+import '../model/restaurant.dart';
+import 'restaurant_detail_screen.dart';
+import 'package:review_restaurant/service/restaurant_service.dart';
 
 class RestaurantListScreen extends StatefulWidget {
-  final String city;
-  final String district;
-
+  final City city;
+  final District district;
+  final TextEditingController searchController;
   RestaurantListScreen({
     required this.city,
     required this.district,
+    required this.searchController,
   });
 
   @override
@@ -14,50 +20,99 @@ class RestaurantListScreen extends StatefulWidget {
 }
 
 class _RestaurantListScreenState extends State<RestaurantListScreen> {
-  final List<String> allImages = [
-    'assets/images/bobanbojpg.jpg',
-    'assets/images/comtam.jpg',
-    'assets/images/micaysasin.jpg',
-    'assets/images/piza.jpg',
-    'assets/images/sushimrtom.jpg',
-    // Add 5 more restaurant images here
-    'assets/images/bun-bo-dung.jpg',
-    'assets/images/banh-canh-ghe-ngoc-lam.jpg',
-    'assets/images/lau-bo-nam-canh.jpg',
-    'assets/images/quan-pho-toan.jpg',
-    'assets/images/mr-tofu-bun-dau-mam-tom.jpg',
-  ];
+  RestaurantService restaurantService = RestaurantService();
+  List<Restaurant> restaurants = [];
+  List<Restaurant> filteredRestaurants = [];
+  List<bool> isFavorite = [];
+  String searchKeyword = '';
 
-  final List<String> restaurantNames = [
-    'Bơ Bán Bò',
-    'Cơm Tấm Phúc Lọc Thọ',
-    'Mì Cay Sasin',
-    'Pizza Hut',
-    'Sushi Mr.Tom',
-    // Add 5 more restaurant names here
-    'Bún Bò Dũng',
-    'Bánh Canh Ghẹ Ngọc Lâm',
-    'Lẩu Bò Năm Canh',
-    'Quán Phở Toàn',
-    'Bún đậu MrTofu',
-  ];
+  void navigateToRestaurantDetail(int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RestaurantDetailScreen(),
+      ),
+    );
+  }
 
-  List<bool> isFavorite =
-      List.filled(10, false); // Tạo danh sách trạng thái yêu thích ban đầu
+  @override
+  void initState() {
+    super.initState();
+    loadRestaurants();
+  }
+
+  void loadRestaurants() async {
+    try {
+      List<Restaurant> fetchedRestaurants = await restaurantService
+          .getRestaurantsByDistrictId(widget.district.districtId);
+      setState(() {
+        restaurants = fetchedRestaurants;
+        isFavorite = List.generate(fetchedRestaurants.length, (index) => false);
+        filterRestaurants();
+      });
+    } catch (e) {
+      print('Error loading restaurants: $e');
+    }
+  }
+
+  void filterRestaurants() {
+    if (widget.searchController.text.isEmpty) {
+      setState(() {
+        filteredRestaurants = restaurants
+            .where((restaurant) => restaurant.resName
+                .toLowerCase()
+                .contains(searchKeyword.toLowerCase()))
+            .toList();
+      });
+    } else {
+      setState(() {
+        filteredRestaurants = restaurants
+            .where((restaurant) => restaurant.resName
+                .toLowerCase()
+                .contains(widget.searchController.text.toLowerCase()))
+            .toList();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.red),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              '${widget.district.districtName}, ',
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.orange[400],
+              ),
+            ),
+            Text(
+              '${widget.city.cityName} City',
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.orange[400],
+              ),
+            ),
+            Spacer(),
+          ],
+        ),
       ),
       body: Column(
         children: [
           Container(
             padding: EdgeInsets.all(16.0),
             child: TextField(
+              controller: widget.searchController,
+              onChanged: (value) {
+                searchKeyword = value;
+                filterRestaurants();
+              },
               decoration: InputDecoration(
                 hintText: 'Search for restaurants',
                 border: OutlineInputBorder(),
@@ -71,92 +126,85 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                 crossAxisCount: 2,
                 childAspectRatio: 0.8,
               ),
-              itemCount: allImages.length,
+              itemCount: filteredRestaurants.length,
               itemBuilder: (context, index) {
+                final restaurant = filteredRestaurants[index];
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
+                  child: GestureDetector(
+                    onTap: () => navigateToRestaurantDetail(index),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.0),
-                        color: Color.fromARGB(255, 231, 231, 231),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .center, // Thay đổi căn chỉnh của cột
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.asset(
-                                allImages[index],
-                                fit: BoxFit.cover,
-                                width: double
-                                    .infinity, // Sử dụng chiều rộng tối đa của ô chứa
-                                height: double
-                                    .infinity, // Sử dụng chiều cao tối đa của ô chứa
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          color: Color.fromARGB(255, 231, 231, 231),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.network(
+                                  restaurant.avatar,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              restaurantNames[index],
-                              style: TextStyle(
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                restaurant.resName,
+                                style: TextStyle(
                                   fontSize: 18.0,
                                   color: Colors.black,
-                                  fontWeight: FontWeight.w700),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.attach_money,
-                                        color: const Color.fromARGB(
-                                            221, 124, 122, 122)),
-                                    Text(
-                                      '9.5',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.star,
-                                        color:
-                                            Color.fromARGB(255, 238, 238, 14)),
-                                    Text(
-                                      '5',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ],
-                                ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.favorite,
-                                    color: isFavorite[index]
-                                        ? Colors.red
-                                        : const Color.fromARGB(
-                                            255, 142, 142, 142),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.yellow[800],
+                                      ),
+                                      Text(
+                                        restaurant.calculatedRating.toString(),
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                    ],
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      isFavorite[index] = !isFavorite[index];
-                                    });
-                                  },
-                                ),
-                              ],
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.favorite,
+                                      color: isFavorite[index]
+                                          ? Colors.red
+                                          : const Color.fromARGB(
+                                              255, 142, 142, 142),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        isFavorite[index] = !isFavorite[index];
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

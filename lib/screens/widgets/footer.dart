@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:review_restaurant/screens/favorite_restaurant_screen.dart';
 import 'package:review_restaurant/screens/newsfeed.dart';
 import 'package:review_restaurant/screens/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,7 +46,10 @@ class MyFooter extends StatelessWidget {
         MaterialPageRoute(builder: (context) => NewsfeedScreen()),
       );
     } else {
-      onTabChanged(index);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FavoriteRestaurantScreen()),
+      );
     }
   }
 

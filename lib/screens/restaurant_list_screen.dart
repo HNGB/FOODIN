@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:review_restaurant/model/district.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/City.dart';
 import '../model/restaurant.dart';
+import '../model/user.dart';
 import 'restaurant_detail_screen.dart';
 import 'package:review_restaurant/service/restaurant_service.dart';
 
@@ -9,6 +13,7 @@ class RestaurantListScreen extends StatefulWidget {
   final City city;
   final District district;
   final TextEditingController searchController;
+
   RestaurantListScreen({
     required this.city,
     required this.district,
@@ -23,8 +28,9 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   RestaurantService restaurantService = RestaurantService();
   List<Restaurant> restaurants = [];
   List<Restaurant> filteredRestaurants = [];
-  List<bool> isFavorite = [];
+  List<int> favoriteRestaurantIds = [];
   String searchKeyword = '';
+  User? user;
 
   void navigateToRestaurantDetail(int index) {
     Navigator.push(
@@ -39,6 +45,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   void initState() {
     super.initState();
     loadRestaurants();
+    getUserFromSharedPreferences();
   }
 
   void loadRestaurants() async {
@@ -47,7 +54,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
           .getRestaurantsByDistrictId(widget.district.districtId);
       setState(() {
         restaurants = fetchedRestaurants;
-        isFavorite = List.generate(fetchedRestaurants.length, (index) => false);
+        filteredRestaurants = fetchedRestaurants;
         filterRestaurants();
       });
     } catch (e) {
@@ -58,11 +65,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   void filterRestaurants() {
     if (widget.searchController.text.isEmpty) {
       setState(() {
-        filteredRestaurants = restaurants
-            .where((restaurant) => restaurant.resName
-                .toLowerCase()
-                .contains(searchKeyword.toLowerCase()))
-            .toList();
+        filteredRestaurants = restaurants;
       });
     } else {
       setState(() {
@@ -72,6 +75,93 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                 .contains(widget.searchController.text.toLowerCase()))
             .toList();
       });
+    }
+  }
+
+  void showErrorSnackBar() {
+    const snackBar = SnackBar(
+      content: Text('Failed to add restaurant to favorites.'),
+      duration: Duration(seconds: 3),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void getUserFromSharedPreferences() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userJson = prefs.getString('user');
+
+      if (userJson != null) {
+        Map<String, dynamic> userMap = jsonDecode(userJson);
+        User fetchedUser = User.fromJson(userMap);
+
+        List<Restaurant> favoriteRestaurants = await restaurantService
+            .getFavoriteRestaurantsByUserId(fetchedUser.userId);
+
+        setState(() {
+          user = fetchedUser;
+          favoriteRestaurantIds = favoriteRestaurants
+              .map((restaurant) => restaurant.restaurantId)
+              .toList();
+        });
+      } else {
+        throw Exception('User data not found in SharedPreferences');
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
+  }
+
+  bool isRestaurantFavorite(int restaurantId) {
+    return favoriteRestaurantIds.contains(restaurantId);
+  }
+
+  void addToFavorites(int restaurantId) async {
+    try {
+      if (user != null) {
+        setState(() {
+          favoriteRestaurantIds.add(restaurantId);
+        });
+
+        await restaurantService.addToFavorite(
+          user!.userId,
+          restaurantId,
+        );
+      }
+    } catch (e) {
+      setState(() {
+        favoriteRestaurantIds.remove(restaurantId);
+      });
+      showErrorSnackBar();
+    }
+  }
+
+  void removeFromFavorites(int restaurantId) async {
+    try {
+      if (user != null) {
+        setState(() {
+          favoriteRestaurantIds.remove(restaurantId);
+        });
+
+        await restaurantService.addToFavorite(
+          user!.userId,
+          restaurantId,
+        );
+      }
+    } catch (e) {
+      setState(() {
+        favoriteRestaurantIds.add(restaurantId);
+      });
+      showErrorSnackBar();
+    }
+  }
+
+  void toggleFavorite(int restaurantId) {
+    if (isRestaurantFavorite(restaurantId)) {
+      removeFromFavorites(restaurantId);
+    } else {
+      addToFavorites(restaurantId);
     }
   }
 
@@ -115,7 +205,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
               },
               decoration: InputDecoration(
                 hintText: 'Search for restaurants',
-                border: OutlineInputBorder(),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
                 suffixIcon: Icon(Icons.search),
               ),
             ),
@@ -129,6 +220,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
               itemCount: filteredRestaurants.length,
               itemBuilder: (context, index) {
                 final restaurant = filteredRestaurants[index];
+                final bool isRestaurantFav =
+                    isRestaurantFavorite(restaurant.restaurantId);
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
@@ -189,15 +282,12 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                                   IconButton(
                                     icon: Icon(
                                       Icons.favorite,
-                                      color: isFavorite[index]
+                                      color: isRestaurantFav
                                           ? Colors.red
-                                          : const Color.fromARGB(
-                                              255, 142, 142, 142),
+                                          : Colors.grey,
                                     ),
                                     onPressed: () {
-                                      setState(() {
-                                        isFavorite[index] = !isFavorite[index];
-                                      });
+                                      toggleFavorite(restaurant.restaurantId);
                                     },
                                   ),
                                 ],

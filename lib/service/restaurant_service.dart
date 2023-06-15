@@ -35,4 +35,17 @@ class RestaurantService {
       throw Exception('Failed to load trending restaurants');
     }
   }
+
+  Future<Restaurant> getRestaurantById(int restaurantId) async {
+    final apiUrl =
+        'https://foodiapi.azurewebsites.net/api/Restaurant/$restaurantId';
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final restaurantJson = jsonDecode(response.body);
+      return Restaurant.fromJson(restaurantJson);
+    } else {
+      throw Exception('Failed to load this restaurant');
+    }
+  }
 }

@@ -1,17 +1,17 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:review_restaurant/screens/review_list_screen.dart';
-import 'package:review_restaurant/screens/write_review_screen.dart';
+import 'package:review_restaurant/service/review_service.dart';
 
+import '../model/food.dart';
 import '../model/restaurant.dart';
+import '../model/review.dart';
+import '../service/food_service.dart';
 import '../service/restaurant_service.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
-  // final int restaurantId;
+  final int restaurantId;
 
-  // const RestaurantDetailScreen({Key? key, required this.restaurantId})
-  //     : super(key: key);
+  const RestaurantDetailScreen({Key? key, required this.restaurantId})
+      : super(key: key);
 
   @override
   _RestaurantDetailScreenState createState() => _RestaurantDetailScreenState();
@@ -19,482 +19,279 @@ class RestaurantDetailScreen extends StatefulWidget {
 
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   Restaurant? restaurant;
+  List<Food> foods = [];
   RestaurantService restaurantService = RestaurantService();
+  ReviewService reviewService = ReviewService();
+  FoodService foodService = FoodService();
+  int reviewCount = 0;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   loadRestaurants();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    loadRestaurants();
+    loadMenu();
+  }
 
-  // void loadRestaurants() async {
-  //   try {
-  //     final restaurant =
-  //         await restaurantService.getRestaurantById(widget.restaurantId);
-  //     setState(() {
-  //       this.restaurant = restaurant;
-  //     });
-  //   } catch (e) {
-  //     // Handle error
-  //   }
-  // }
+  void loadRestaurants() async {
+    try {
+      final restaurant =
+          await restaurantService.getRestaurantById(widget.restaurantId);
+      final reviews =
+          await ReviewService().getReviewsByRestaurantId(widget.restaurantId);
+      final reviewCount = reviews.length;
+      setState(() {
+        this.restaurant = restaurant;
+        this.reviewCount = reviewCount;
+      });
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  void loadMenu() async {
+    try {
+      final listFood =
+          await foodService.getFoodListByRestaurantId(widget.restaurantId);
+      setState(() {
+        foods = listFood;
+      });
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  Widget buildRatingStars(int rating) {
+    return Row(
+      children: List.generate(
+        5,
+        (index) => Icon(
+          index < rating ? Icons.star : Icons.star_rounded,
+          color: index < rating
+              ? const Color.fromARGB(255, 255, 230, 5)
+              : const Color.fromARGB(255, 221, 221, 221),
+          size: 20,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    const Color grayIcon = Color.fromARGB(255, 198, 197, 197);
+    const Color grayText = Color.fromARGB(255, 129, 129, 129);
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded,
+              color: Color.fromARGB(255, 255, 107, 21)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(
-          color: Colors.red,
-        ),
-        centerTitle: true,
-        title: const Align(
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'District 9, Ho Chi Minh City',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 2.5,
+            child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: const Column(
-                      children: [
-                        SizedBox(height: 8),
-                        Text(
-                          'Pizza Hut',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
                 Container(
-                  height: 200,
-                  width: 380,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 4,
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'assets/images/pizzaHut.png',
+                    image: DecorationImage(
+                      image: NetworkImage(restaurant?.coverImage ?? ''),
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                Positioned(
+                  left: 5,
+                  right: 5,
+                  bottom: 0,
+                  child: Transform.translate(
+                    offset: const Offset(0, 130.0),
+                    child: Container(
+                      height: 200,
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
                           ),
-                          color: Colors.red,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ReviewsScreen(),
-                                ),
-                              );
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.star,
-                                    size: 45,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Reviews',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        ],
                       ),
-                      Expanded(
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          color: Colors.red,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MenuScreen(),
-                                ),
-                              );
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Icon(Icons.restaurant_menu,
-                                      size: 45, color: Colors.white),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Menu',
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          color: Colors.red,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PhotosScreen(),
-                                ),
-                              );
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.photo_library,
-                                    size: 45,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Photos',
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          color: Colors.red,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => InformationScreen(),
-                                ),
-                              );
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Icon(Icons.info,
-                                      size: 45, color: Colors.white),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Info',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  height: 300, // Set the height for the reviews container
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListView(
-                      children: [
-                        ExpansionPanelList(
-                          elevation: 1,
-                          expandedHeaderPadding: EdgeInsets.zero,
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.fromLTRB(26.0, 16.0, 16.0, 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ExpansionPanel(
-                              headerBuilder:
-                                  (BuildContext context, bool isExpanded) {
-                                return const ListTile(
-                                  leading: Icon(Icons.reviews),
-                                  title: Text(
-                                    'Reviews',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                );
-                              },
-                              body: const SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    ListTile(
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Reviewer Name',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: Text(
-                                        'Bình luận về nhà hàng',
-                                      ),
-                                    ),
-                                    ListTile(
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Reviewer Name',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: Text(
-                                        'Bình luận về nhà hàng',
-                                      ),
-                                    ),
-                                    ListTile(
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Reviewer Name',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: Text(
-                                        'Bình luận về nhà hàng',
-                                      ),
-                                    ),
-                                    ListTile(
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Reviewer Name',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                              Icon(Icons.star,
-                                                  color: Colors.yellow,
-                                                  size: 18),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: Text(
-                                        'Bình luận về nhà hàng',
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            Text(
+                              restaurant?.resName ?? '',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
                               ),
-                              isExpanded: true,
                             ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                buildRatingStars(
+                                    restaurant?.calculatedRating ?? 0),
+                                const SizedBox(width: 10),
+                                Text(
+                                  restaurant?.calculatedRating.toString() ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Color.fromARGB(255, 255, 230, 5),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  '($reviewCount Reviews)',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Color.fromARGB(255, 199, 199, 199),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            const Divider(
+                              color: Color.fromARGB(
+                                  255, 206, 206, 206), //color of divider
+                              height: 5, //height spacing of divider
+                              thickness: 0.5, //thickness of divier line
+                            ),
+                            const SizedBox(height: 20),
+                            const Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  size: 20,
+                                  color: grayIcon,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  '09:00 - 22:00',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: grayText,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+                                Icon(
+                                  Icons.local_parking_rounded,
+                                  size: 20,
+                                  color: grayIcon,
+                                ),
+                                SizedBox(width: 2),
+                                Text(
+                                  'Parking lot',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: grayText,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.house_outlined,
+                                  size: 20,
+                                  color: grayIcon,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  restaurant?.address ?? '',
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      color: grayText,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            )
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
-              child: SizedBox(
-                height: 40,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WriteReviewScreen(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25.0, 145.0, 0, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Menu',
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: const Text('Write a Review'),
                 ),
-              ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: foods.length,
+                    itemBuilder: (context, index) {
+                      final food = foods[index];
+                      return Container(
+                        width: 150,
+                        margin: const EdgeInsets.only(right: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 120,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: NetworkImage(food.foodImage),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              food.foodName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              '${food.foodPrice.toString()}đ',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],

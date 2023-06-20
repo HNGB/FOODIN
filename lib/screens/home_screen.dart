@@ -234,7 +234,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RestaurantDetailScreen(),
+                        builder: (context) =>
+                            RestaurantDetailScreen(restaurantId: 30),
                       ),
                     );
                   },

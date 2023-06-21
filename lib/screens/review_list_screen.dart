@@ -2,14 +2,48 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-class ReviewsScreen extends StatelessWidget {
-  const ReviewsScreen({Key? key});
+import '../model/review.dart';
+import '../service/review_service.dart';
+
+class ReviewsScreen extends StatefulWidget {
+  final int restaurantId;
+
+  const ReviewsScreen({Key? key, required this.restaurantId}) : super(key: key);
+
+  @override
+  _ReviewsScreenState createState() => _ReviewsScreenState();
+}
+
+class _ReviewsScreenState extends State<ReviewsScreen> {
+  ReviewService reviewService = ReviewService();
+
+  List<Review> reviews = [];
+  int reviewCount = 0;
+  @override
+  void initState() {
+    super.initState();
+    loadReview();
+  }
+
+  void loadReview() async {
+    try {
+      final reviews =
+          await ReviewService().getReviewsByRestaurantId(widget.restaurantId);
+      final reviewCount = reviews.length;
+      setState(() {
+        this.reviews = reviews.toList();
+        this.reviewCount = reviewCount;
+      });
+    } catch (e) {
+      // Handle error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reviews'),
+        title: const Text('Reviews'),
       ),
       body: ListView.builder(
         itemCount: reviews.length,
@@ -32,53 +66,105 @@ class ReviewsScreen extends StatelessWidget {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(15.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Text(
-                          review.title,
-                          style: const TextStyle(
-                            fontSize: 17.0,
-                            fontWeight: FontWeight.bold,
+                        Container(),
+                        const SizedBox(
+                          height: 50,
+                          child: CircleAvatar(
+                            // Đặt avatar mặc định tại đây
+                            backgroundColor:
+                                Colors.blue, // Màu nền của avatar mặc định
+                            child: Icon(
+                              Icons.person,
+                              color: Colors
+                                  .white, // Màu biểu tượng của avatar mặc định
+                            ),
                           ),
                         ),
-                        const Spacer(),
-                        Row(
-                          children: List.generate(5, (index) {
-                            return Icon(
-                              Icons.star,
-                              color: index < review.rating
-                                  ? Colors.yellow
-                                  : Colors.grey,
-                              size: 18.0,
-                            );
-                          }),
+                        const SizedBox(
+                            width: 10), // Khoảng cách giữa avatar và tên
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                review.fullName,
+                                style: const TextStyle(
+                                  fontSize: 17.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                review.dateReview,
+                                style: const TextStyle(
+                                  fontSize: 13.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 211, 211, 211),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Icon(
+                          Icons.more_horiz,
+                          size: 20,
+                          color: Colors.grey,
                         ),
                       ],
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Divider(
+                      color:
+                          Color.fromARGB(255, 206, 206, 206), //color of divider
+                      height: 5, //height spacing of divider
+                      thickness: 0.5, //thickness of divier line
+                    ),
+                    const SizedBox(height: 10.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        return Icon(
+                          Icons.star,
+                          color: index < review.ratingReview
+                              ? Colors.yellow
+                              : Colors.grey,
+                          size: 35.0,
+                        );
+                      }),
+                    ),
                     const SizedBox(height: 10.0),
                     Text(
-                      review.description,
+                      review.comment,
                       style: const TextStyle(
+                        color: Color.fromARGB(255, 118, 118, 118),
                         fontSize: 16.0,
                       ),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 10.0),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Row(
+                        Column(
                           children: [
                             LikeButton(review: review),
-                            const SizedBox(width: 4.0),
-                            Text(review.likes.toString()),
-                            const SizedBox(width: 8.0),
+                            const SizedBox(height: 4.0),
+                            Text(review.helpful.toString()),
+                          ],
+                        ),
+                        Column(
+                          children: [
                             UnlikeButton(review: review),
-                            const SizedBox(width: 4.0),
-                            Text(review.unlikes.toString()),
+                            const SizedBox(height: 4.0),
+                            Text(review.unhelpful.toString()),
                           ],
                         ),
                       ],
@@ -113,9 +199,9 @@ class _LikeButtonState extends State<LikeButton> {
         setState(() {
           isLiked = !isLiked;
           if (isLiked) {
-            widget.review.likes++;
+            widget.review.helpful++;
           } else {
-            widget.review.likes--;
+            widget.review.unhelpful--;
           }
         });
       },
@@ -146,9 +232,9 @@ class _UnlikeButtonState extends State<UnlikeButton> {
         setState(() {
           isUnliked = !isUnliked;
           if (isUnliked) {
-            widget.review.unlikes++;
+            widget.review.unhelpful++;
           } else {
-            widget.review.unlikes--;
+            widget.review.unhelpful--;
           }
         });
       },
@@ -159,45 +245,3 @@ class _UnlikeButtonState extends State<UnlikeButton> {
     );
   }
 }
-
-class Review {
-  String title;
-  String description;
-  int likes;
-  int unlikes;
-  int rating;
-
-  Review({
-    required this.title,
-    required this.description,
-    this.likes = 0,
-    this.unlikes = 0,
-    this.rating = 0,
-  });
-}
-
-final List<Review> reviews = [
-  Review(
-    title: 'Nguyen Tan Duy',
-    description:
-        'I had a wonderful experience with their customer service team. They were very responsive and helpful in resolving my issue. The representative was polite and patient, ensuring that all my questions were answered. I highly recommend their customer service.',
-    likes: 25,
-    unlikes: 1,
-    rating: 5,
-  ),
-  Review(
-    title: 'Nguyen Duy',
-    description: 'This app is amazing! It has all the features I need.',
-    likes: 10,
-    unlikes: 2,
-    rating: 4,
-  ),
-  Review(
-    title: 'Duy Nguyen',
-    description: 'The app crashes sometimes and the UI could be better.',
-    likes: 5,
-    unlikes: 8,
-    rating: 3,
-  ),
-  // Add more reviews here
-];

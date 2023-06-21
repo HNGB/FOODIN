@@ -19,7 +19,6 @@ class Restaurant {
     required this.coverImage,
     required this.calculatedRating,
   });
-
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     return Restaurant(
         restaurantId: json['restaurantId'],

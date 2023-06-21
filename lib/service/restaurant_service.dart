@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../model/favourite_restaurant.dart';
 import '../model/restaurant.dart';
 
 class RestaurantService {
@@ -55,7 +56,8 @@ class RestaurantService {
     }
   }
 
-  Future<List<Restaurant>> getFavoriteRestaurantsByUserId(int userId) async {
+  Future<List<FavouriteRestaurant>> getFavoriteRestaurantsByUserId(
+      int userId) async {
     final apiUrl =
         'https://foodiapi.azurewebsites.net/api/Restaurant/Favorite/$userId';
     final response = await http.get(Uri.parse(apiUrl));
@@ -63,7 +65,7 @@ class RestaurantService {
     if (response.statusCode == 200) {
       final restaurantsJson = jsonDecode(response.body) as List;
       return restaurantsJson
-          .map((restaurantJson) => Restaurant.fromJson(restaurantJson))
+          .map((restaurantJson) => FavouriteRestaurant.fromJson(restaurantJson))
           .toList();
     } else {
       throw Exception('Failed to load favorite restaurants');

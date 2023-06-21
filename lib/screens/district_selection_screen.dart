@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:review_restaurant/model/district.dart';
+import 'package:review_restaurant/screens/subscription_screen.dart';
 import 'package:review_restaurant/service/district_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/City.dart';
+import '../model/user.dart';
 import 'home_screen.dart';
 
 class DistrictSelectionScreen extends StatefulWidget {
@@ -20,12 +25,13 @@ class _DistrictSelectionScreenState extends State<DistrictSelectionScreen> {
   District? selectedDistrict;
   List<District> districts = [];
   DistrictService districtService = DistrictService();
-
+  User? user;
   @override
   void initState() {
     super.initState();
     setStatusBarColor(Colors.white);
     loadDistricts();
+    getUserFromSharedPreferences();
   }
 
   void loadDistricts() async {
@@ -47,6 +53,26 @@ class _DistrictSelectionScreenState extends State<DistrictSelectionScreen> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
+  }
+
+  void getUserFromSharedPreferences() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userJson = prefs.getString('user');
+
+      if (userJson != null) {
+        Map<String, dynamic> userMap = jsonDecode(userJson);
+        User fetchedUser = User.fromJson(userMap);
+
+        setState(() {
+          user = fetchedUser;
+        });
+      } else {
+        throw Exception('User data not found in SharedPreferences');
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
   }
 
   @override
@@ -106,15 +132,25 @@ class _DistrictSelectionScreenState extends State<DistrictSelectionScreen> {
                           selectedDistrict = value;
                         });
                         if (selectedDistrict != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeScreen(
-                                city: widget.city,
-                                district: selectedDistrict!,
+                          if (user!.subscriptionStatus == false) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SubscriptionScreen(screen: "Home"),
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeScreen(
+                                  city: widget.city,
+                                  district: selectedDistrict!,
+                                ),
+                              ),
+                            );
+                          }
                         }
                       },
                     ),

@@ -6,7 +6,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white10,
         elevation: 0,
         automaticallyImplyLeading: false, // Ẩn nút quay lại
         centerTitle: true,

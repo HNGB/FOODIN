@@ -8,7 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/City.dart';
 import '../../model/district.dart';
+import '../../model/user.dart';
 import '../home_screen.dart';
+import '../subscription_screen.dart';
 
 class MyFooter extends StatelessWidget {
   final int currentIndex;
@@ -41,10 +43,24 @@ class MyFooter extends StatelessWidget {
         // Handle case when city or district is not available
       }
     } else if (index == 3) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => NewsfeedScreen()),
-      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userJson = prefs.getString('user');
+
+      Map<String, dynamic> userMap = jsonDecode(userJson!);
+      User fetchedUser = User.fromJson(userMap);
+      if (fetchedUser.subscriptionStatus == false) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SubscriptionScreen(screen: "NewsFeed"),
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NewsfeedScreen()),
+        );
+      }
     } else {
       Navigator.push(
         context,

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:review_restaurant/screens/restaurant_detail_screen.dart';
 import 'package:review_restaurant/screens/widgets/footer.dart';
 import 'package:review_restaurant/service/restaurant_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/City.dart';
 import '../model/district.dart';
 import '../model/restaurant.dart';
@@ -31,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    saveCityAndDistrictToLocalStorage();
     loadTrendingRestaurant();
     startTimer();
   }
@@ -80,6 +83,14 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return '';
     }
+  }
+
+  void saveCityAndDistrictToLocalStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String cityJson = jsonEncode(widget.city.toJson());
+    String districtJson = jsonEncode(widget.district.toJson());
+    await prefs.setString('city', cityJson);
+    await prefs.setString('district', districtJson);
   }
 
   @override
@@ -234,8 +245,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            RestaurantDetailScreen(restaurantId: 30),
+                        builder: (context) => RestaurantDetailScreen(
+                            restaurantId: restaurant.restaurantId),
                       ),
                     );
                   },

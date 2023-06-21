@@ -2,7 +2,7 @@ class Blog {
   final int blogId;
   final int userId;
   final String fullName;
-  final String title;
+  final String? title;
   final String blogContent;
   final int likeCount;
   final int commentCount;
@@ -13,7 +13,7 @@ class Blog {
     required this.blogId,
     required this.userId,
     required this.fullName,
-    required this.title,
+    this.title,
     required this.blogContent,
     required this.likeCount,
     required this.commentCount,

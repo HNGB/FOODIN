@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:review_restaurant/screens/signup_screen.dart';
 import 'package:http/http.dart' as http;
 import '../component/my_button.dart';
@@ -39,19 +38,22 @@ class LoginPage extends StatelessWidget {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('user', jsonEncode(responseData));
 
+        // ignore: use_build_context_synchronously
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => CitySelectionScreen()),
         );
       } else {
         // Handle other status codes if needed
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Login failed. Please check and re-enter.'),
           ),
         );
       }
     } catch (e) {
+      // ignore: avoid_print
       print(e.toString());
     }
   }

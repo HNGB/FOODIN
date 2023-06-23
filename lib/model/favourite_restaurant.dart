@@ -4,14 +4,14 @@ class FavouriteRestaurant {
   String address;
   String? phoneNumber;
   String avatar;
-  int calculatedRating;
+  double? calculatedRating;
   FavouriteRestaurant({
     required this.restaurantId,
     required this.resName,
     required this.address,
     this.phoneNumber,
     required this.avatar,
-    required this.calculatedRating,
+    this.calculatedRating,
   });
 
   factory FavouriteRestaurant.fromJson(Map<String, dynamic> json) {
@@ -21,6 +21,6 @@ class FavouriteRestaurant {
         address: json['address'],
         phoneNumber: json['phoneNumber'],
         avatar: json['avatar'],
-        calculatedRating: json['calculatedRating']);
+        calculatedRating: json['calculatedRating']?.toDouble());
   }
 }

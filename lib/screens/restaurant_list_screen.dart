@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:review_restaurant/model/district.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/City.dart';
+import '../model/favourite_restaurant.dart';
 import '../model/restaurant.dart';
 import '../model/user.dart';
 import 'restaurant_detail_screen.dart';
@@ -36,7 +37,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RestaurantDetailScreen(),
+        builder: (context) => RestaurantDetailScreen(restaurantId: index),
       ),
     );
   }
@@ -96,7 +97,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
         Map<String, dynamic> userMap = jsonDecode(userJson);
         User fetchedUser = User.fromJson(userMap);
 
-        List<Restaurant> favoriteRestaurants = await restaurantService
+        List<FavouriteRestaurant> favoriteRestaurants = await restaurantService
             .getFavoriteRestaurantsByUserId(fetchedUser.userId);
 
         setState(() {
@@ -169,7 +170,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white10,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.red),
         title: Row(
@@ -225,7 +226,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
-                    onTap: () => navigateToRestaurantDetail(index),
+                    onTap: () =>
+                        navigateToRestaurantDetail(restaurant.restaurantId),
                     child: Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.0),

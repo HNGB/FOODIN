@@ -16,4 +16,28 @@ class BlogService {
       throw Exception('Failed to load Blogs');
     }
   }
+
+  Future<void> createPost(
+      int userId, String? title, String blogContent, String? blogImage) async {
+    const apiUrl = 'https://foodiapi.azurewebsites.net/api/Blog';
+
+    final requestBody = jsonEncode({
+      'userId': userId,
+      'title': title,
+      'blogContent': blogContent,
+      'blogImage': blogImage,
+    });
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: requestBody,
+    );
+
+    if (response.statusCode == 200) {
+      print('Post created successfully');
+    } else {
+      print('Failed to create post. Error: ${response.statusCode}');
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:review_restaurant/screens/review_list_screen.dart';
+import 'package:review_restaurant/screens/write_review_screen.dart';
 import 'package:review_restaurant/service/review_service.dart';
 
 import '../model/food.dart';
@@ -8,6 +9,7 @@ import '../model/restaurant.dart';
 import '../model/review.dart';
 import '../service/food_service.dart';
 import '../service/restaurant_service.dart';
+import 'menu_screen.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   final int restaurantId;
@@ -75,7 +77,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
     }
   }
 
-  Widget buildRatingStars(int rating) {
+  Widget buildRatingStars(double rating) {
     return Row(
       children: List.generate(
         5,
@@ -127,7 +129,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     child: Transform.translate(
                       offset: const Offset(0, 110.0),
                       child: Container(
-                        height: 200,
+                        height: 222,
                         margin: const EdgeInsets.symmetric(horizontal: 16.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -283,7 +285,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const MenuScreen(),
+                              builder: (context) => MenuScreen(
+                                  restaurantId: restaurant!.restaurantId),
                             ),
                           );
                         },
@@ -466,54 +469,20 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class MenuScreen extends StatelessWidget {
-  const MenuScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Menu'),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.amber[900],
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => WriteReviewScreen(
+                      restaurantId: restaurant!.restaurantId,
+                    )),
+          );
+        },
+        child: const Icon(Icons.edit),
       ),
-      body: const Center(
-        child: Text('Menu của nhà hàng'),
-      ),
-    );
-  }
-}
-
-class PhotosScreen extends StatelessWidget {
-  const PhotosScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Photos'),
-      ),
-      body: const Center(
-        child: Text('Ảnh của nhà hàng'),
-      ),
-    );
-  }
-}
-
-class InformationScreen extends StatelessWidget {
-  const InformationScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Information'),
-      ),
-      body: const Center(
-        child: Text('Thông tin về nhà hàng'),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
     );
   }
 }

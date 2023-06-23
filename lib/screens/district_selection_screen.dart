@@ -34,6 +34,14 @@ class _DistrictSelectionScreenState extends State<DistrictSelectionScreen> {
     getUserFromSharedPreferences();
   }
 
+  void saveCityAndDistrictToLocalStorage(District district) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String cityJson = jsonEncode(widget.city.toJson());
+    String districtJson = jsonEncode(district.toJson());
+    await prefs.setString('city', cityJson);
+    await prefs.setString('district', districtJson);
+  }
+
   void loadDistricts() async {
     try {
       List<District> fetchedDistricts =
@@ -130,6 +138,7 @@ class _DistrictSelectionScreenState extends State<DistrictSelectionScreen> {
                       onChanged: (value) {
                         setState(() {
                           selectedDistrict = value;
+                          saveCityAndDistrictToLocalStorage(value!);
                         });
                         if (selectedDistrict != null) {
                           if (user!.subscriptionStatus == false) {

@@ -7,7 +7,7 @@ class Restaurant {
   int ratingId;
   String avatar;
   String coverImage;
-  int calculatedRating;
+  double? calculatedRating;
   Restaurant({
     required this.restaurantId,
     required this.resName,
@@ -17,7 +17,7 @@ class Restaurant {
     required this.ratingId,
     required this.avatar,
     required this.coverImage,
-    required this.calculatedRating,
+    this.calculatedRating,
   });
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     return Restaurant(
@@ -29,6 +29,6 @@ class Restaurant {
         ratingId: json['ratingId'],
         avatar: json['avatar'],
         coverImage: json['coverImage'],
-        calculatedRating: json['calculatedRating']);
+        calculatedRating: json['calculatedRating']?.toDouble());
   }
 }

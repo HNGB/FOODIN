@@ -3,6 +3,7 @@ class Review {
   int restaurantId;
   int userId;
   String fullName;
+  String? title;
   String dateReview;
   int ratingReview;
   String comment;
@@ -15,6 +16,7 @@ class Review {
     required this.restaurantId,
     required this.userId,
     required this.fullName,
+    this.title,
     required this.dateReview,
     required this.ratingReview,
     required this.comment,
@@ -29,6 +31,7 @@ class Review {
       restaurantId: json['restaurantId'],
       userId: json['userId'],
       fullName: json['fullName'],
+      title: json['title'],
       dateReview: json['dateReview'],
       ratingReview: json['ratingReview'],
       comment: json['comment'],
@@ -36,5 +39,15 @@ class Review {
       helpful: json['helpful'],
       unhelpful: json['unhelpful'],
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'restaurantId': restaurantId,
+      'userId': userId,
+      'ratingReview': ratingReview,
+      'title': title,
+      'image': image,
+      'comment': comment,
+    };
   }
 }

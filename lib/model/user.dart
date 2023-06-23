@@ -46,4 +46,21 @@ class User {
       votes: json['votes'],
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'fullName': fullName,
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'userName': userName,
+      'password': password,
+      'subscriptionStatus': subscriptionStatus,
+      'blogs': blogs,
+      'comments': comments,
+      'favorites': favorites,
+      'likes': likes,
+      'reviews': reviews,
+      'votes': votes,
+    };
+  }
 }

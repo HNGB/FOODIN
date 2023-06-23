@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:review_restaurant/screens/city_selection_screen.dart';
-import 'package:review_restaurant/screens/welcome_screen.dart';
 import 'package:review_restaurant/screens/widgets/customized_button.dart';
 import 'package:review_restaurant/screens/widgets/customized_textfield.dart';
 import 'forgot_passwor.dart';
@@ -36,7 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 50,
                     width: 50,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.red, width: 1), // Màu viền đỏ
+                      border: Border.all(
+                          color: Colors.red, width: 1), // Màu viền đỏ
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: IconButton(
@@ -99,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>  CitySelectionScreen(),
+                        builder: (_) => CitySelectionScreen(),
                       ),
                     );
                   },
@@ -178,11 +178,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 140,
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(48, 8, 8, 8.0),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(48, 8, 8, 8.0),
                   child: Row(
                     // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: const [
+                    children: [
                       Text(
                         "Don't have an account?",
                         style: TextStyle(

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:review_restaurant/screens/widgets/footer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'newlogin_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
@@ -84,8 +87,18 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: Icon(Icons.output_outlined),
                   title: Text('Log out'),
-                  onTap: () {
-                    // TODO: Implement privacy settings
+                  onTap: () async {
+                    // Xóa SharedPreferences
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    await prefs.clear();
+
+                    // Điều hướng đến trang LoginPage
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                      (Route<dynamic> route) => false,
+                    );
                   },
                 ),
               ],

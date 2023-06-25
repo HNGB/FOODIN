@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:review_restaurant/screens/home_screen.dart';
 import 'package:review_restaurant/screens/newsfeed.dart';
+import 'package:review_restaurant/screens/payment_paypal_screen.dart';
 import 'package:review_restaurant/screens/payment_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +19,7 @@ class SubscriptionScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,10 +38,10 @@ class SubscriptionScreen extends StatelessWidget {
               color: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                side: BorderSide(color: Colors.red, width: 2.0),
+                side: const BorderSide(color: Colors.red, width: 2.0),
               ),
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -48,7 +49,7 @@ class SubscriptionScreen extends StatelessWidget {
                       'Upgrade to premium and get all the features available ',
                       style: TextStyle(fontSize: 16),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     const Text(
                       'Special for Premium:',
                       style: TextStyle(
@@ -102,16 +103,19 @@ class SubscriptionScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PaymentScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const PaymentPayPalScreen(
+                                price: 0.99,
+                              )),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.orange,
+                    backgroundColor: Colors.orange,
                   ),
                   child: Container(
                     width: double.infinity,
                     alignment: Alignment.center,
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: const Text(
                       '0.99\$' '/ month',
                       style: TextStyle(
@@ -126,16 +130,19 @@ class SubscriptionScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PaymentScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const PaymentPayPalScreen(
+                                price: 10.00,
+                              )),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.orange,
+                    backgroundColor: Colors.orange,
                   ),
                   child: Container(
                     width: double.infinity,
                     alignment: Alignment.center,
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: const Text(
                       '10\$' '/ year',
                       style: TextStyle(
@@ -175,13 +182,13 @@ class SubscriptionScreen extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.transparent,
+                    backgroundColor: Colors.transparent,
                     elevation: 0,
                   ),
                   child: Container(
                     width: double.infinity,
                     alignment: Alignment.center,
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: const Text(
                       'Skip',
                       style: TextStyle(
@@ -194,7 +201,7 @@ class SubscriptionScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
           ],
         ),
       ),

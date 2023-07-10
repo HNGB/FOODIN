@@ -15,7 +15,8 @@ class RestaurantListScreen extends StatefulWidget {
   final District district;
   final TextEditingController searchController;
 
-  RestaurantListScreen({
+  const RestaurantListScreen({
+    super.key,
     required this.city,
     required this.district,
     required this.searchController,
@@ -172,7 +173,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white10,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.red),
+        iconTheme: const IconThemeData(color: Colors.red),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -190,14 +191,14 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                 color: Colors.orange[400],
               ),
             ),
-            Spacer(),
+            const Spacer(),
           ],
         ),
       ),
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: widget.searchController,
               onChanged: (value) {
@@ -208,13 +209,13 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                 hintText: 'Search for restaurants',
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
-                suffixIcon: Icon(Icons.search),
+                suffixIcon: const Icon(Icons.search),
               ),
             ),
           ),
           Expanded(
             child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 0.8,
               ),
@@ -235,7 +236,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16.0),
-                          color: Color.fromARGB(255, 231, 231, 231),
+                          color: const Color.fromARGB(255, 231, 231, 231),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -255,7 +256,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 restaurant.resName,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18.0,
                                   color: Colors.black,
                                   fontWeight: FontWeight.w700,
@@ -277,7 +278,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                                       ),
                                       Text(
                                         restaurant.calculatedRating.toString(),
-                                        style: TextStyle(color: Colors.black87),
+                                        style: const TextStyle(
+                                            color: Colors.black87),
                                       ),
                                     ],
                                   ),

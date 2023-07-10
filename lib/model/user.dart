@@ -6,11 +6,13 @@ class User {
   String userName;
   String password;
   bool subscriptionStatus;
+  int point;
   List<dynamic>? blogs;
   List<dynamic>? comments;
   List<dynamic>? favorites;
   List<dynamic>? likes;
   List<dynamic>? reviews;
+  List<dynamic>? userVouchers;
   List<dynamic>? votes;
 
   User({
@@ -21,11 +23,13 @@ class User {
     required this.userName,
     required this.password,
     required this.subscriptionStatus,
+    required this.point,
     this.blogs,
     this.comments,
     this.favorites,
     this.likes,
     this.reviews,
+    this.userVouchers,
     this.votes,
   });
 
@@ -38,11 +42,13 @@ class User {
       userName: json['userName'],
       password: json['password'],
       subscriptionStatus: json['subscriptionStatus'],
+      point: json['point'],
       blogs: json['blogs'],
       comments: json['comments'],
       favorites: json['favorites'],
       likes: json['likes'],
       reviews: json['reviews'],
+      userVouchers: json['userVouchers'],
       votes: json['votes'],
     );
   }
@@ -60,6 +66,7 @@ class User {
       'favorites': favorites,
       'likes': likes,
       'reviews': reviews,
+      'userVouchers': userVouchers,
       'votes': votes,
     };
   }

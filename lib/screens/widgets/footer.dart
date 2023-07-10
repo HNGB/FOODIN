@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:review_restaurant/screens/favorite_restaurant_screen.dart';
 import 'package:review_restaurant/screens/newsfeed.dart';
 import 'package:review_restaurant/screens/settings_screen.dart';
+import 'package:review_restaurant/screens/voucher_list_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/City.dart';
@@ -16,7 +17,8 @@ class MyFooter extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTabChanged;
 
-  MyFooter({required this.currentIndex, required this.onTabChanged});
+  const MyFooter(
+      {super.key, required this.currentIndex, required this.onTabChanged});
 
   Future<void> _onTabChanged(int index, BuildContext context) async {
     if (index == 2) {
@@ -52,7 +54,7 @@ class MyFooter extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SubscriptionScreen(screen: "NewsFeed"),
+            builder: (context) => const SubscriptionScreen(screen: "NewsFeed"),
           ),
         );
       } else {
@@ -61,10 +63,15 @@ class MyFooter extends StatelessWidget {
           MaterialPageRoute(builder: (context) => NewsfeedScreen()),
         );
       }
-    } else {
+    } else if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => FavoriteRestaurantScreen()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const VouchersScreen()),
       );
     }
   }
@@ -72,8 +79,21 @@ class MyFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.orange[300],
-      padding: EdgeInsets.all(1.0),
+      height: 70,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: const Offset(0, 3), // changes position of shadow
+          ),
+        ],
+        color: Colors.white,
+      ),
+      padding: const EdgeInsets.all(1.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -103,6 +123,14 @@ class MyFooter extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(
+              Icons.card_giftcard_outlined,
+              size: _getCurrentTabSize(4),
+              color: _getCurrentTabColor(4),
+            ),
+            onPressed: () => _onTabChanged(4, context),
+          ),
+          IconButton(
+            icon: Icon(
               Icons.settings,
               size: _getCurrentTabSize(2),
               color: _getCurrentTabColor(2),
@@ -119,6 +147,8 @@ class MyFooter extends StatelessWidget {
   }
 
   Color _getCurrentTabColor(int tabIndex) {
-    return currentIndex == tabIndex ? Colors.red : Colors.black;
+    return currentIndex == tabIndex
+        ? Colors.orange.shade800
+        : const Color.fromARGB(255, 135, 135, 135);
   }
 }

@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
   final City city;
   final District district;
 
-  HomeScreen({required this.city, required this.district});
+  const HomeScreen({super.key, required this.city, required this.district});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   RestaurantService restaurantService = RestaurantService();
   TextEditingController searchController = TextEditingController();
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
   Timer? _timer;
   int _currentPage = 0;
 
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_currentPage < 2) {
         _currentPage++;
       } else {
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       _pageController.animateToPage(
         _currentPage,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
       );
     });
@@ -99,8 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         children: [
           Container(
-            padding: EdgeInsets.fromLTRB(20, 15, 20, 0),
-            child: Text(
+            padding: const EdgeInsets.fromLTRB(20, 15, 20, 0),
+            child: const Text(
               "Find Restaurant",
               style: TextStyle(
                 fontSize: 28,
@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -127,9 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.orange[600],
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 IconButton(
-                  icon: Icon(Icons.location_on),
+                  icon: const Icon(Icons.location_on),
                   color: Colors.red,
                   onPressed: () {
                     Navigator.pushReplacement(
@@ -144,18 +144,18 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(20.0, 10, 20.0, 16),
+            padding: const EdgeInsets.fromLTRB(20.0, 10, 20.0, 16),
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Search for restaurants',
-                border: OutlineInputBorder(
+                border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(18)),
                 ),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Container(
+          SizedBox(
             height: MediaQuery.of(context).size.height / 4,
             child: PageView.builder(
               controller: _pageController,
@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(20, 15, 20, 16),
+            padding: const EdgeInsets.fromLTRB(20, 15, 20, 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Container(
+          SizedBox(
             height: 200,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -252,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Container(
                     width: 200,
-                    margin: EdgeInsets.all(10.0),
+                    margin: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16.0),
                     ),
@@ -272,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               restaurant.resName,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16.0,
                               ),
                             ),

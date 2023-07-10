@@ -39,7 +39,6 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
         setState(() {
           user = fetchedUser;
-          user?.subscriptionStatus = true;
         });
       } else {
         throw Exception('User data not found in SharedPreferences');

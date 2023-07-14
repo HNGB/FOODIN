@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../model/user.dart';
 import '../service/paypal_service.dart';
+import '../service/user_service.dart';
 
 class PaymentPayPalScreen extends StatefulWidget {
   final Function? onFinish;
@@ -21,6 +25,9 @@ class PaymentState extends State<PaymentPayPalScreen> {
   String? checkoutUrl;
   String? executeUrl;
   String? accessToken;
+  UserService userService = UserService();
+
+  User? user;
   PaypalServices services = PaypalServices();
 
   // you can change default value according to your desired
@@ -40,7 +47,7 @@ class PaymentState extends State<PaymentPayPalScreen> {
   @override
   void initState() {
     super.initState();
-
+    getUserFromSharedPreferences();
     Future.delayed(Duration.zero, () async {
       try {
         accessToken = await services.getAccessToken();
@@ -70,34 +77,50 @@ class PaymentState extends State<PaymentPayPalScreen> {
     });
   }
 
-  // // item name, price and quantity
-  // String itemName = 'One plus 10';
-  // String itemPrice = '100';
-  // int quantity = 1;
+  void getUserFromSharedPreferences() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userJson = prefs.getString('user');
+
+      if (userJson != null) {
+        Map<String, dynamic> userMap = jsonDecode(userJson);
+        User fetchedUser = User.fromJson(userMap);
+        setState(() {
+          user = fetchedUser;
+        });
+      } else {
+        throw Exception('User data not found in SharedPreferences');
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
+  }
+
+  // item name, price and quantity
+  String itemName = 'Premium';
+  int quantity = 1;
 
   Map<String, dynamic> getOrderParams() {
-    // List items = [
-    //   {
-    //     "name": itemName,
-    //     "quantity": quantity,
-    //     "price": itemPrice,
-    //     "currency": defaultCurrency["currency"]
-    //   }
-    // ];
+    List items = [
+      {
+        "name": itemName,
+        "quantity": quantity,
+        "price": widget.price.toString(),
+        "currency": defaultCurrency["currency"]
+      }
+    ];
 
     // checkout invoice details
     String totalAmount = widget.price.toString();
     String subTotalAmount = widget.price.toString();
     String shippingCost = '0';
-    int shippingDiscountCost = 0;
-    // String userFirstName = 'john';
-    // String userLastName = 'smith';
-    // String addressCity = 'USA';
-    // String addressStreet = "i-10";
-    // String addressZipCode = '44000';
-    // String addressCountry = 'Pakistan';
-    // String addressState = 'Islamabad';
-    // String addressPhoneNumber = '+1 223 6161 789';
+    String userName = user!.fullName;
+    String addressCity = 'HCMC';
+    String addressStreet = "i-10";
+    String addressZipCode = '44000';
+    String addressCountry = 'Vietnam';
+    String addressState = 'HCMC';
+    String addressPhoneNumber = user!.phoneNumber;
 
     Map<String, dynamic> temp = {
       "intent": "sale",
@@ -110,27 +133,27 @@ class PaymentState extends State<PaymentPayPalScreen> {
             "details": {
               "subtotal": subTotalAmount,
               "shipping": shippingCost,
-              "shipping_discount": ((-1.0) * shippingDiscountCost).toString()
+              "shipping_discount": 0
             }
           },
           "description": "The payment transaction description.",
           "payment_options": {
             "allowed_payment_method": "INSTANT_FUNDING_SOURCE"
           },
-          // "item_list": {
-          //   "items": items,
-          //   if (isEnableShipping && isEnableAddress)
-          //     "shipping_address": {
-          //       "recipient_name": "$userFirstName $userLastName",
-          //       "line1": addressStreet,
-          //       "line2": "",
-          //       "city": addressCity,
-          //       "country_code": addressCountry,
-          //       "postal_code": addressZipCode,
-          //       "phone": addressPhoneNumber,
-          //       "state": addressState
-          //     },
-          // }
+          "item_list": {
+            "items": items,
+            if (isEnableShipping && isEnableAddress)
+              "shipping_address": {
+                "recipient_name": userName,
+                "line1": addressStreet,
+                "line2": "",
+                "city": addressCity,
+                "country_code": addressCountry,
+                "postal_code": addressZipCode,
+                "phone": addressPhoneNumber,
+                "state": addressState
+              },
+          }
         }
       ],
       "note_to_payer": "Contact us for any questions on your order.",
@@ -141,8 +164,6 @@ class PaymentState extends State<PaymentPayPalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(checkoutUrl);
-
     if (checkoutUrl != null) {
       return Scaffold(
         appBar: AppBar(
@@ -164,8 +185,11 @@ class PaymentState extends State<PaymentPayPalScreen> {
                     .executePayment(executeUrl, payerID, accessToken)
                     .then((id) {
                   widget.onFinish!(id);
-                  Navigator.of(context).pop();
+                  if (id != "0") {
+                    userService.changeSubcriptionStatus(user!.userId);
+                  }
                 });
+                Navigator.of(context).pop();
               } else {
                 Navigator.of(context).pop();
               }

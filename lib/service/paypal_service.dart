@@ -70,20 +70,20 @@ class PaypalServices {
   }
 
   /// for carrying out the payment process
-  Future<String?> executePayment(url, payerId, accessToken) async {
+  Future<String> executePayment(url, payerId, accessToken) async {
     try {
-      var response = await http.post(url,
+      var uri = Uri.parse(url); // Tạo đối tượng Uri từ chuỗi url
+      var response = await http.post(uri, // Truyền đối tượng Uri vào http.post
           body: convert.jsonEncode({"payer_id": payerId}),
           headers: {
             "content-type": "application/json",
-            'Authorization': 'Bearer ' + accessToken
+            'Authorization': 'Bearer $accessToken'
           });
-
       final body = convert.jsonDecode(response.body);
       if (response.statusCode == 200) {
         return body["id"];
       }
-      return null;
+      return "0";
     } catch (e) {
       rethrow;
     }
